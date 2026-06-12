@@ -91,7 +91,8 @@
     return b;
   }
 
-  // Generate sequence containing 2 fillers + 15 block main trials (5 main categories repeated in each block)
+  // Generate sequence containing 2 fillers + 15 main trials.
+  // Each block has 4 common questions plus 1 block-specific extra question, keeping 5 trials per block.
   function createQueue() {
     const r = rng(hash(S.id));
     const q = [];
@@ -117,7 +118,8 @@
     });
 
     // 2. Main Phase (15 trials, partitioned into 3 blocks: 2, 4, 8)
-    const mainQs = window.QUESTIONS.main; // exactly 5 questions
+    const commonMainQs = window.QUESTIONS.main; // 4 common questions repeated across all blocks
+    const specialMain = window.QUESTIONS.specialMain || {};
     const blocksConfig = [
       { count: 2, id: "block_2", index: 1 },
       { count: 4, id: "block_4", index: 2 },
@@ -125,8 +127,9 @@
     ];
 
     blocksConfig.forEach((bConf) => {
-      // Shuffle the same 5 question categories inside each block loop using the random state
-      const shuffledBlockQs = shuffle(mainQs, r);
+      const specialQ = specialMain[bConf.count];
+      const blockQs = specialQ ? [...commonMainQs, specialQ] : commonMainQs;
+      const shuffledBlockQs = shuffle(blockQs, r);
       shuffledBlockQs.forEach((qConfig, tIdx) => {
         q.push({
           phase: "main",
