@@ -1,6 +1,6 @@
-# AnswerBestFriends - Hick's Law HCI Experiment Site (Block-Based Design)
+# AnswerBestFriends - Hick's Law HCI Experiment Site (Aligned Block Design)
 
-This repository contains a static web application and Google Apps Script backend designed for a human-computer interaction (HCI) experiment investigating the applicability of Hick's Law to AI recommendation user interfaces using a block-based design.
+This repository contains a static web application and Google Apps Script backend designed for a human-computer interaction (HCI) experiment investigating the applicability of Hick's Law to AI recommendation user interfaces.
 
 ---
 
@@ -12,13 +12,13 @@ This project is created for the course assignment "Advanced Human Interface I" (
 
 ---
 
-## 2. Experiment Design (Block-Based)
+## 2. Experiment Design (Aligned Categories)
 
 To improve data validity and mitigate cognitive load, the experiment is partitioned into blocks:
 
 1.  **Warm-up/Filler Block**:
-    *   **2 trials** are presented at the very beginning to let participants adapt to the selection interface and hide the exact independent variable set sizes.
-    *   Rating surveys are completely skipped during this warm-up phase.
+    *   **2 trials** are presented at the very beginning to let participants adapt to the selection interface and hide the independent variable conditions.
+    *   Rating surveys are completely skipped.
     *   Marked with `phase = "filler"`, `is_filler = true`, `is_bonus = false`. Excluded from main analysis.
 2.  **Main Experiment Blocks**:
     *   Presented in a fixed order to ensure system stability:
@@ -26,9 +26,16 @@ To improve data validity and mitigate cognitive load, the experiment is partitio
         2.  **4-Choices Block** (`block_4`): 5 trials.
         3.  **8-Choices Block** (`block_8`): 5 trials.
     *   **Total Main Trials**: 15.
-    *   **Reaction Time ($RT$)**: Measured for each individual trial (from options rendering to selection click).
+    *   **Aligned Question Categories**:
+        To control for content bias (e.g. how a specific question or familiarity affects decision time rather than option count), the **same 5 question categories** are repeated in each block:
+        *   `food`
+        *   `weekend_place`
+        *   `ai_app`
+        *   `study_place`
+        *   `travel_style`
+    *   Within each block, these 5 questions are shuffled using the participant ID as a seed.
     *   **Subjective Rating**: satisfaction, difficulty, and confidence are evaluated **once at the end of each block** rather than after every question.
-    *   **Rating Mapping**: The subjective scores entered at the end of a block are automatically mapped to all 5 trials within that block for analysis.
+    *   **Rating Mapping**: The subjective scores entered at the end of a block are automatically mapped to all 5 trials within that block.
 3.  **Bonus Block (余興)**:
     *   Presented for friend participants (`T` prefix) or test runs (`TEST` prefix).
     *   **5 trials** of acquaintance questions. Ratings are completely skipped.
@@ -36,9 +43,15 @@ To improve data validity and mitigate cognitive load, the experiment is partitio
 
 ---
 
-## 3. Participant ID Rules
+## 3. Experimental Limitations
 
-The site classifies participants using prefixes to split research data:
+Because the same 5 question categories are repeated across three conditions (2, 4, and 8 choices), please note the following limitations in your analysis:
+*   **Learning/Repetition Effects**: Participants see the same categories multiple times, meaning decision times in later blocks might be shortened due to recognition and memory of the questions rather than just the number of options.
+*   **Fatigue/Order Effects**: Since blocks are presented in a fixed order ($2 \rightarrow 4 \rightarrow 8$), fatigue towards the end of the 15 trials could influence reaction times.
+
+---
+
+## 4. Participant ID Rules
 
 *   **`P` prefix** (e.g., `P001`): Regular participant. They go through the **Filler + 3 Main blocks (17 trials total)**.
 *   **`T` prefix** (e.g., `T001`): Acquaintance/friend participant. They go through the **Filler + 3 Main blocks + Bonus block (22 trials total)**.
@@ -47,7 +60,7 @@ The site classifies participants using prefixes to split research data:
 
 ---
 
-## 4. Data Columns
+## 5. Data Columns
 
 Every trial logs a record containing the following columns:
 
@@ -88,7 +101,7 @@ Every trial logs a record containing the following columns:
 
 ---
 
-## 5. Local Testing
+## 6. Local Testing
 
 1.  Double-click `index.html` to open it in a web browser.
 2.  Open Developer Tools (F12 or Cmd+Option+I) to inspect console statements.
@@ -96,7 +109,7 @@ Every trial logs a record containing the following columns:
 
 ---
 
-## 6. Google Apps Script Setup
+## 7. Google Apps Script Setup
 
 1.  Open your browser and navigate to [Google Sheets](https://sheets.google.com).
 2.  Create a blank spreadsheet.
@@ -116,7 +129,7 @@ Every trial logs a record containing the following columns:
 
 ---
 
-## 7. Analysis filtration guidelines
+## 8. Analysis filtration guidelines
 
 When performing regression and statistical modeling:
 *   **Target Population**: Exclude rows where `participant_type == "TEST"`.

@@ -1,6 +1,6 @@
 # AnswerBestFriends setup
 
-A bilingual static web app for a small HCI experiment based on Hick's Law, now revised with a block-based design.
+A bilingual static web app for a small HCI experiment based on Hick's Law, revised with a block-based design and aligned question categories.
 
 ## Purpose
 
@@ -16,7 +16,7 @@ Hick's Law:
 RT = a + b log2(n + 1)
 ```
 
-## Experiment design (Block-based)
+## Experiment design (Aligned Block-based)
 
 Independent variable:
 
@@ -38,6 +38,20 @@ Dependent variables:
 
 Total main experiment trials: 15.
 
+### Aligned Question Categories:
+To control for content bias, the same 5 question categories are used in all 3 blocks:
+*   `food`
+*   `weekend_place`
+*   `ai_app`
+*   `study_place`
+*   `travel_style`
+
+Within each block, these 5 categories are shuffled using the participant ID seed.
+
+### Experimental Limitations:
+*   **Learning/Repetition Effects**: Since the same 5 categories are repeated in each block, participants may become familiar with the questions, potentially reducing reaction times in later blocks.
+*   **Fatigue/Order Effects**: Because conditions are presented in a fixed order ($2 \rightarrow 4 \rightarrow 8$), participant fatigue or familiarity with the UI could affect results in the later blocks.
+
 ## Participant IDs
 
 - `P001`, `P002`, ...: normal participants, main experiment only (17 trials)
@@ -53,6 +67,8 @@ is_bonus == false
 is_filler == false
 participant_type != "TEST"
 ```
+
+Bonus data is for fun and presentation only. Do not use it in the main analysis.
 
 ## Local testing
 
@@ -126,12 +142,12 @@ Each trial row contains:
 - `satisfaction`
 - `difficulty`
 - `confidence`
-- **`block_id`**
-- **`block_index`**
-- **`trial_in_block`**
-- **`block_option_count`**
-- **`rating_scope`**
-- **`is_filler`**
+- `block_id`
+- `block_index`
+- `trial_in_block`
+- `block_option_count`
+- `rating_scope`
+- `is_filler`
 - `user_agent`
 - `screen_width`
 - `screen_height`

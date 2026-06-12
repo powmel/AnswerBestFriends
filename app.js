@@ -91,7 +91,7 @@
     return b;
   }
 
-  // Generate sequence containing 2 fillers + 15 block main trials
+  // Generate sequence containing 2 fillers + 15 block main trials (5 main categories repeated in each block)
   function createQueue() {
     const r = rng(hash(S.id));
     const q = [];
@@ -117,17 +117,17 @@
     });
 
     // 2. Main Phase (15 trials, partitioned into 3 blocks: 2, 4, 8)
-    const shuffledMainQs = shuffle(window.QUESTIONS.main, r);
+    const mainQs = window.QUESTIONS.main; // exactly 5 questions
     const blocksConfig = [
       { count: 2, id: "block_2", index: 1 },
       { count: 4, id: "block_4", index: 2 },
       { count: 8, id: "block_8", index: 3 }
     ];
 
-    let qIdx = 0;
     blocksConfig.forEach((bConf) => {
-      for (let t = 1; t <= 5; t++) {
-        const qConfig = shuffledMainQs[qIdx++];
+      // Shuffle the same 5 question categories inside each block loop using the random state
+      const shuffledBlockQs = shuffle(mainQs, r);
+      shuffledBlockQs.forEach((qConfig, tIdx) => {
         q.push({
           phase: "main",
           is_bonus: false,
@@ -139,11 +139,11 @@
           options: qConfig.options[S.lang].slice(0, bConf.count),
           block_id: bConf.id,
           block_index: bConf.index,
-          trial_in_block: t,
+          trial_in_block: tIdx + 1,
           block_option_count: bConf.count,
           rating_scope: "block"
         });
-      }
+      });
     });
 
     return q;
