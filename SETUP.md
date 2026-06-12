@@ -1,6 +1,6 @@
 # AnswerBestFriends setup
 
-A bilingual static web app for a small HCI experiment based on Hick's Law.
+A bilingual static web app for a small HCI experiment based on Hick's Law, now revised with a block-based design.
 
 ## Purpose
 
@@ -16,7 +16,7 @@ Hick's Law:
 RT = a + b log2(n + 1)
 ```
 
-## Experiment design
+## Experiment design (Block-based)
 
 Independent variable:
 
@@ -25,28 +25,34 @@ Independent variable:
 Dependent variables:
 
 - `reaction_time_ms`
-- `satisfaction`
-- `difficulty`
-- `confidence`
+- `satisfaction` (1-7 Likert rating, collected once per block and mapped to all trials in that block)
+- `difficulty` (1-7 Likert rating, collected once per block and mapped to all trials in that block)
+- `confidence` (1-7 Likert rating, collected once per block and mapped to all trials in that block)
 
-Each participant completes all three main conditions. Condition order is pseudo-randomized by participant ID.
+### Flow:
+
+1.  **Filler Block**: 2 warm-up trials to hide experiment intent (ratings skipped).
+2.  **Main Block 1**: 2-choices $\times$ 5 trials, then block rating.
+3.  **Main Block 2**: 4-choices $\times$ 5 trials, then block rating.
+4.  **Main Block 3**: 8-choices $\times$ 5 trials, then block rating.
+
+Total main experiment trials: 15.
 
 ## Participant IDs
 
-- `P001`, `P002`, ...: normal participants, main experiment only
-- `T001`, `T002`, ...: friend participants, main experiment plus bonus questions
+- `P001`, `P002`, ...: normal participants, main experiment only (17 trials)
+- `T001`, `T002`, ...: friend participants, main experiment plus bonus questions (22 trials)
 - `TEST001`, ...: testing data, exclude from final analysis
 - Other IDs: accepted as `OTHER`
 
 Main analysis should use only:
 
 ```text
-phase = main
-is_bonus = false
-participant_type != TEST
+phase == "main"
+is_bonus == false
+is_filler == false
+participant_type != "TEST"
 ```
-
-Bonus data is for fun and presentation only. Do not use it in the main analysis.
 
 ## Local testing
 
@@ -64,8 +70,8 @@ http://localhost:8000
 
 Test these IDs:
 
-- `P001`: main experiment only
-- `T001`: main experiment + bonus questions
+- `P001`: main experiment only (17 trials total)
+- `T001`: main experiment + bonus questions (22 trials total)
 - `TEST001`: test participant
 
 With `config.js` still using the placeholder URL, submission will intentionally fail and show a JSON fallback. This is expected and useful for verifying the payload.
@@ -120,6 +126,12 @@ Each trial row contains:
 - `satisfaction`
 - `difficulty`
 - `confidence`
+- **`block_id`**
+- **`block_index`**
+- **`trial_in_block`**
+- **`block_option_count`**
+- **`rating_scope`**
+- **`is_filler`**
 - `user_agent`
 - `screen_width`
 - `screen_height`
@@ -135,16 +147,13 @@ Analyze only rows where:
 ```text
 phase == "main"
 is_bonus == false
+is_filler == false
 participant_type != "TEST"
 ```
 
 Suggested analysis:
 
 - Compare average `reaction_time_ms` across `choices_2`, `choices_4`, and `choices_8`.
-- Compare average `difficulty`, `satisfaction`, and `confidence` across conditions.
+- Compare average `difficulty`, `satisfaction`, and `confidence` across conditions (since ratings are evaluated per block, they are identical for the 5 trials in each block).
 - Plot `log2(option_count + 1)` against `reaction_time_ms`.
-- Because the sample size is likely small, describe the result as a small-scale or pilot experiment.
-
-## Why the main experiment does not use images
-
-The main experiment uses text-only choices. Images can introduce additional noise from visual attractiveness, information amount, and cultural interpretation. Since the main variable is the number of choices, text-only options keep the experiment simpler and cleaner.
+- Describe the result as a pilot experiment.

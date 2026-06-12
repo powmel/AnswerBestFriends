@@ -1,245 +1,130 @@
-# AnswerBestFriends
-
-A bilingual (Japanese / English) static web app for a small HCI experiment based on **Hick's Law**.
-
-## Project overview
-
-AnswerBestFriends presents participants with a choice-selection task. The number of choices (2, 4, or 8) is varied across three trials. Decision time and subjective ratings are recorded in each trial. All data is sent to a Google Apps Script endpoint or, if that is unavailable, shown as a JSON fallback for manual collection.
-
-## Experiment purpose
-
-**Research theme:**
-
-> The effect of choice count in an AI recommendation-style UI on decision time and subjective evaluation — an application of Hick's Law to AI agent interfaces.
-
-**Hick's Law:**
-
-```
-RT = a + b · log₂(n + 1)
-```
-
-Where `n` is the number of choices and `RT` is reaction time. The hypothesis is that `reaction_time_ms` increases logarithmically as `option_count` increases.
-
-## Participant ID rules
-
-| ID prefix | Type | Description |
-|-----------|------|-------------|
-| `P001`, `P002`, … | `P` | Normal participants — main experiment only |
-| `T001`, `T002`, … | `T` | Friend participants — main experiment **plus** bonus questions |
-| `TEST001`, `TEST002`, … | `TEST` | Test runs — excluded from final analysis |
-| Anything else | `OTHER` | Accepted but treated as undefined |
-
-### How to confirm P / T / TEST classification
-
-Open browser DevTools → Console before starting, or check the downloaded JSON after the run:
-
-```json
-{ "participant_type": "P" }    // P001 → P
-{ "participant_type": "T" }    // T001 → T
-{ "participant_type": "TEST" } // TEST001 → TEST
-```
-
-- **P**: submit screen is reached after 3 main trials; no bonus questions appear.
-- **T**: bonus intro screen appears after 3 main trials; 5 bonus questions follow.
-- **TEST**: same flow as T (main + bonus). Rows are excluded from analysis by filtering `participant_type != "TEST"`.
-
-## Main vs bonus data separation
-
-Each row contains `phase` and `is_bonus` fields.
-
-| Row type | `phase` | `is_bonus` |
-|----------|---------|------------|
-| Main experiment | `"main"` | `false` |
-| Bonus question | `"bonus"` | `true` |
-
-**Main analysis filter:**
-
-```
-phase == "main"
-is_bonus == false
-participant_type != "TEST"
-```
-
-Bonus data is for fun and lab presentation only. Do not include it in the Hick's Law regression or subjective rating analysis.
-
-## Timing
-
-`reaction_time_ms` measures **from when the choices become visible to when the participant clicks one choice**. The timer starts in a `requestAnimationFrame` callback immediately after the choice screen is displayed, and stops at the moment the click event fires. Rating screen time is captured and saved after `reaction_time_ms` is already stored, so it does not contaminate the decision-time measurement.
-
-## Independent variable
-
-- `option_count`: 2, 4, or 8 choices
-
-Condition order is pseudo-randomized per participant ID using a deterministic hash, so the same ID always produces the same order.
-
-## Dependent variables
-
-- `reaction_time_ms` — decision time in milliseconds
-- `satisfaction` — post-choice satisfaction (1–7 Likert)
-- `difficulty` — perceived difficulty (1–7 Likert)
-- `confidence` — confidence in choice (1–7 Likert)
-
-Bonus rows have `satisfaction`, `difficulty`, and `confidence` set to `null`.
-
-## Local testing
-
-Run a local server (required to avoid CORS issues with `fetch`):
-
-```bash
-cd /path/to/AnswerBestFriends
-python3 -m http.server 8000
-```
-
-Then open:
-
-```
-http://localhost:8000
-```
-
-### Test cases
-
-**Test A — P001 / 日本語**
-
-1. Enter `P001`, select 日本語, click 開始.
-2. 3 main trials appear; each is followed by satisfaction / difficulty / confidence ratings.
-3. After trial 3, no bonus screen — submit screen appears directly.
-4. Because `config.js` has the placeholder URL, JSON fallback appears.
-5. All rows have `phase: "main"`, `is_bonus: false`, `participant_type: "P"`. Exactly 3 rows.
-
-**Test B — T001 / English**
-
-1. Enter `T001`, select English, click Start.
-2. 3 main trials in English.
-3. Bonus intro screen appears after trial 3.
-4. 5 bonus questions follow.
-5. JSON contains main rows (`phase: "main"`, `is_bonus: false`) and bonus rows (`phase: "bonus"`, `is_bonus: true`). Total 8 rows.
-
-**Test C — TEST001 / 日本語**
-
-1. Enter `TEST001`, 日本語, 開始.
-2. Main + bonus flow (same as T).
-3. All rows have `participant_type: "TEST"`.
-4. These rows can be excluded from analysis by filtering `participant_type != "TEST"`.
-
-## GAS URL未設定時のJSON fallback
-
-When `config.js` still contains the placeholder URL (`PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE`), the app detects it and skips the network call. The submit screen shows:
-
-- A failure message in the participant's language.
-- A textarea with the full JSON payload.
-- **JSONをコピー** / **Copy JSON** button.
-- **JSONをダウンロード** / **Download JSON** button (downloads `{participantId}.json`).
-
-This fallback also activates if the network call throws an error (e.g. CORS rejection before GAS is configured).
-
-## Data columns
-
-Each trial row contains these fields:
-
-| Column | Description |
-|--------|-------------|
-| `participant_id` | Raw ID entered by participant |
-| `participant_type` | P / T / TEST / OTHER |
-| `language` | ja / en |
-| `session_id` | `{id}-{timestamp}` |
-| `trial_id` | Sequential number within session |
-| `phase` | main / bonus |
-| `is_bonus` | false / true |
-| `condition` | choices_2 / choices_4 / choices_8 / bonus_8 |
-| `option_count` | Number of options shown |
-| `question_id` | Identifier for the question |
-| `question_text` | Displayed question text |
-| `options_json` | JSON array of shown options |
-| `selected_option` | The option the participant chose |
-| `trial_start_time` | ISO timestamp when choices became visible |
-| `selected_time` | ISO timestamp of click |
-| `reaction_time_ms` | Decision time in ms |
-| `satisfaction` | 1–7 (null for bonus) |
-| `difficulty` | 1–7 (null for bonus) |
-| `confidence` | 1–7 (null for bonus) |
-| `user_agent` | Browser user agent |
-| `screen_width` | Screen width in px |
-| `screen_height` | Screen height in px |
-| `created_at` | ISO timestamp when row was saved |
-| `session_start_time` | ISO timestamp of session start |
-| `session_end_time` | ISO timestamp of final save |
-| `total_time_ms` | Total elapsed session time in ms |
-
-## Analysis notes
-
-Filter rows before analysis:
-
-```
-phase == "main"
-is_bonus == false
-participant_type != "TEST"
-```
-
-Suggested steps:
-
-1. Compare mean `reaction_time_ms` across `choices_2`, `choices_4`, `choices_8`.
-2. Compare mean `difficulty`, `satisfaction`, `confidence` across conditions.
-3. Fit or plot `reaction_time_ms` against `log₂(option_count + 1)` to visualize Hick's Law.
-4. Because the sample size is small, report as a pilot experiment and describe trends descriptively.
-
-## GitHub Pages deployment
-
-1. Open the repository on GitHub.
-2. Go to **Settings → Pages**.
-3. Under **Build and deployment**, select **Deploy from a branch**.
-4. Branch: `main`, folder: `/ (root)`.
-5. Click **Save**.
-
-Expected URL after a few minutes:
-
-```
-https://powmel.github.io/AnswerBestFriends/
-```
-
-The `.nojekyll` file in the root ensures GitHub Pages does not process the site through Jekyll. All assets use relative paths, so the site works both locally and on GitHub Pages without changes.
-
-## Google Apps Script setup
-
-Do this **after** GitHub Pages is confirmed working.
-
-1. Create a new Google Spreadsheet (any name).
-2. Open **Extensions → Apps Script**.
-3. Delete the default `myFunction` code.
-4. Paste the entire contents of `gas/Code.gs`.
-5. Save (Ctrl+S or Cmd+S).
-6. Click **Deploy → New deployment**.
-7. Type: **Web app**.
-8. Execute as: **Me**.
-9. Who has access: **Anyone**.
-10. Click **Deploy**.
-11. Copy the Web App URL — it ends with `/exec`.
-12. Open `config.js` and replace `PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE` with that URL.
-13. Commit and push the updated `config.js`.
-
-```js
-// config.js after setup
-window.CONFIG = {
-  GAS_WEB_APP_URL: "https://script.google.com/macros/s/YOUR_ID/exec"
-};
-```
-
-To verify the endpoint, open the `/exec` URL in a browser — you should see:
-```json
-{"success":true,"message":"AnswerBestFriends GAS endpoint is running."}
-```
-
-Data is appended to a sheet named `responses` in the spreadsheet. Headers are created automatically on the first submission.
-
-## Pre-experiment checklist
-
-Before starting data collection, confirm the following:
-
-- [ ] GitHub Pages URL loads correctly: `https://powmel.github.io/AnswerBestFriends/`
-- [ ] `config.js` has the real GAS Web App URL (not the placeholder)
-- [ ] GAS `/exec` URL returns `{"success":true,...}` in browser
-- [ ] Test run with `TEST001` completes and data appears in the Google Sheet
-- [ ] P001 flow: 3 main trials → submit, no bonus
-- [ ] T001 flow: 3 main trials → bonus intro → 5 bonus questions → submit
-- [ ] JSON fallback still works if `config.js` URL is reverted to placeholder
-- [ ] Bonus member names in `questions.js` match actual participants (update `メンバーA`–`メンバーH` if needed)
-- [ ] Participant IDs for the study are distributed (P001–P0XX for main, T001–T0XX for friends)
+# AnswerBestFriends - Hick's Law HCI Experiment Site (Block-Based Design)
+
+This repository contains a static web application and Google Apps Script backend designed for a human-computer interaction (HCI) experiment investigating the applicability of Hick's Law to AI recommendation user interfaces using a block-based design.
+
+---
+
+## 1. Project Overview
+
+This project is created for the course assignment "Advanced Human Interface I" (ヒューマンインタフェース特論I).
+*   **Research Title**: Impact of Choice Set Size on Decision-Making Time and Subjective Evaluation in AI Recommendation UIs: Applying Hick's Law to AI Agent Interfaces.
+*   **Objective**: Measure how the number of choices ($n=2, 4, 8$) presented by an AI assistant affects user reaction time, choice satisfaction, decision difficulty, and choice confidence using a block-based experiment design to reduce participant cognitive fatigue.
+
+---
+
+## 2. Experiment Design (Block-Based)
+
+To improve data validity and mitigate cognitive load, the experiment is partitioned into blocks:
+
+1.  **Warm-up/Filler Block**:
+    *   **2 trials** are presented at the very beginning to let participants adapt to the selection interface and hide the exact independent variable set sizes.
+    *   Rating surveys are completely skipped during this warm-up phase.
+    *   Marked with `phase = "filler"`, `is_filler = true`, `is_bonus = false`. Excluded from main analysis.
+2.  **Main Experiment Blocks**:
+    *   Presented in a fixed order to ensure system stability:
+        1.  **2-Choices Block** (`block_2`): 5 trials.
+        2.  **4-Choices Block** (`block_4`): 5 trials.
+        3.  **8-Choices Block** (`block_8`): 5 trials.
+    *   **Total Main Trials**: 15.
+    *   **Reaction Time ($RT$)**: Measured for each individual trial (from options rendering to selection click).
+    *   **Subjective Rating**: satisfaction, difficulty, and confidence are evaluated **once at the end of each block** rather than after every question.
+    *   **Rating Mapping**: The subjective scores entered at the end of a block are automatically mapped to all 5 trials within that block for analysis.
+3.  **Bonus Block (余興)**:
+    *   Presented for friend participants (`T` prefix) or test runs (`TEST` prefix).
+    *   **5 trials** of acquaintance questions. Ratings are completely skipped.
+    *   Marked with `phase = "bonus"`, `is_bonus = true`, `is_filler = false`. Excluded from main analysis.
+
+---
+
+## 3. Participant ID Rules
+
+The site classifies participants using prefixes to split research data:
+
+*   **`P` prefix** (e.g., `P001`): Regular participant. They go through the **Filler + 3 Main blocks (17 trials total)**.
+*   **`T` prefix** (e.g., `T001`): Acquaintance/friend participant. They go through the **Filler + 3 Main blocks + Bonus block (22 trials total)**.
+*   **`TEST` prefix** (e.g., `TEST001`): Testing run. Excluded from analysis.
+*   **Other inputs**: Evaluated as `OTHER`.
+
+---
+
+## 4. Data Columns
+
+Every trial logs a record containing the following columns:
+
+| Column | Type | Description |
+|---|---|---|
+| `participant_id` | String | User-entered identifier |
+| `participant_type` | String | `P`, `T`, `TEST`, or `OTHER` |
+| `language` | String | `ja` or `en` |
+| `session_id` | String | Session UUID |
+| `trial_id` | Integer | Trial index in current session (1 to 17 or 22) |
+| `phase` | String | `filler`, `main`, or `bonus` |
+| `is_bonus` | Boolean | `true` for bonus trials, `false` otherwise |
+| `condition` | String | `choices_2`, `choices_4`, `choices_8`, `filler`, or `bonus` |
+| `option_count` | Integer | Number of choices displayed |
+| `question_id` | String | Question identifier (e.g., `food`, `filler_vibe`) |
+| `question_text` | String | Question string shown to user |
+| `options_json` | String | JSON list of choices rendered |
+| `selected_option` | String | Selected option value |
+| `trial_start_time` | String | ISO Timestamp when choices rendered |
+| `selected_time` | String | ISO Timestamp when option clicked |
+| `reaction_time_ms` | Integer | `selected_time - trial_start_time` (precision timed) |
+| `satisfaction` | Integer / Null | 1-7 Likert rating (copied across block trials; null for filler/bonus) |
+| `difficulty` | Integer / Null | 1-7 Likert rating (copied across block trials; null for filler/bonus) |
+| `confidence` | Integer / Null | 1-7 Likert rating (copied across block trials; null for filler/bonus) |
+| `block_id` | String | Block identifier (`block_2`, `block_4`, `block_8`, `filler`, `bonus`) |
+| `block_index` | Integer / Null | 1-based block sequence index (1, 2, 3) |
+| `trial_in_block` | Integer / Null | Trial index inside block (1 to 5) |
+| `block_option_count`| Integer / Null | Set size condition for the block (2, 4, 8) |
+| `rating_scope` | String | Scope of questionnaire (`"block"` or `"none"`) |
+| `is_filler` | Boolean | `true` for warm-ups, `false` otherwise |
+| `user_agent` | String | Browser User-Agent string |
+| `screen_width` | Integer | Window inner width |
+| `screen_height` | Integer | Window inner height |
+| `created_at` | String | ISO timestamp string |
+| `session_start_time`| String | ISO timestamp when start button was pressed |
+| `session_end_time` | String | ISO timestamp when submission started |
+| `total_time_ms` | Integer | Total session duration |
+
+---
+
+## 5. Local Testing
+
+1.  Double-click `index.html` to open it in a web browser.
+2.  Open Developer Tools (F12 or Cmd+Option+I) to inspect console statements.
+3.  Test using `TEST001`, `P001`, or `T001` credentials.
+
+---
+
+## 6. Google Apps Script Setup
+
+1.  Open your browser and navigate to [Google Sheets](https://sheets.google.com).
+2.  Create a blank spreadsheet.
+3.  In the top menu, select **Extensions** > **Apps Script**.
+4.  Replace the default code with the contents of [gas/Code.gs](file:///Users/taiki/Documents/筑波/ヒューマンインターフェース特論/AnswerBestFriends/gas/Code.gs).
+5.  Click Save, then **Deploy** > **New deployment**.
+6.  Select type **Web app**. Set:
+    *   **Execute as**: `Me`
+    *   **Who has access**: `Anyone`
+7.  Deploy and authorize permissions. Copy the **Web app URL**.
+8.  Open [config.js](file:///Users/taiki/Documents/筑波/ヒューマンインターフェース特論/AnswerBestFriends/config.js) and paste the URL:
+    ```javascript
+    const CONFIG = {
+      GAS_WEB_APP_URL: "https://script.google.com/macros/s/.../exec"
+    };
+    ```
+
+---
+
+## 7. Analysis filtration guidelines
+
+When performing regression and statistical modeling:
+*   **Target Population**: Exclude rows where `participant_type == "TEST"`.
+*   **Target Trials**: Query rows that represent true main experiment trials:
+    *   `phase == "main"`
+    *   `is_filler == false`
+    *   `is_bonus == false`
+*   **Excluded blocks**: Filter out rows belonging to `phase == "filler"` (warm-ups) and `phase == "bonus"` (acquaintance questions).
+*   **Independent Variable**: Use `block_option_count` (2, 4, or 8) or `option_count`.
+*   **Dependent Variables**: `reaction_time_ms`, `satisfaction`, `difficulty`, `confidence`.
+*   **Control Variables**: You can inspect `block_index` or `trial_in_block` to analyze learning effects or participant fatigue.
