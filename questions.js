@@ -59,38 +59,29 @@ window.QUESTIONS = {
       }
     }
   ],
+
+  // Four common main questions are repeated in every 2/4/8-choice block.
   main: [
     {
       question_id: "food",
       question: {
-        ja: "今の気分で、夕食に選びたいものを1つ選んでください。",
-        en: "Choose one food option you would like to have for dinner now."
+        ja: "今日食べたいものを1つ選んでください。",
+        en: "What do you want to eat today?"
       },
       options: {
-        ja: ["ラーメン", "カレー", "寿司", "ピザ", "焼肉", "中華", "ハンバーガー", "韓国料理"],
-        en: ["Ramen", "Curry", "Sushi", "Pizza", "Yakiniku", "Chinese food", "Hamburger", "Korean food"]
+        ja: ["ピザ", "寿司", "ラーメン", "カレー", "パスタ", "そば", "ピラフ", "焼き鳥"],
+        en: ["Pizza", "Sushi", "Ramen", "Curry", "Pasta", "Soba", "Pilaf", "Yakitori"]
       }
     },
     {
       question_id: "weekend_place",
       question: {
-        ja: "週末に行くなら、最も行きたい場所を1つ選んでください。",
-        en: "Choose one place you would most like to visit on a weekend."
+        ja: "週末に行くなら、どこがいいですか？",
+        en: "Where would you like to go this weekend?"
       },
       options: {
-        ja: ["温泉", "海", "山", "美術館", "カフェ街", "映画館", "夜景スポット", "歴史的な街"],
-        en: ["Hot spring", "Beach", "Mountain", "Art museum", "Cafe district", "Movie theater", "Night-view spot", "Historic town"]
-      }
-    },
-    {
-      question_id: "ai_app",
-      question: {
-        ja: "今使ってみたいAIアプリを1つ選んでください。",
-        en: "Choose one AI app you would most like to try."
-      },
-      options: {
-        ja: ["予定を自動で組むAI", "論文を要約するAI", "英語発表を練習するAI", "旅行先を提案するAI", "研究アイデアを出すAI", "食事を決めるAI", "返信文を考えるAI", "集中を管理するAI"],
-        en: ["AI that schedules your day", "AI that summarizes papers", "AI that helps practice presentations", "AI that suggests travel destinations", "AI that generates research ideas", "AI that helps choose meals", "AI that writes message replies", "AI that manages focus"]
+        ja: ["カフェ", "映画館", "ショッピングモール", "公園", "家でゆっくり", "本屋", "ジム", "観光地を散歩"],
+        en: ["Cafe", "Movie theater", "Shopping mall", "Park", "Relaxing at home", "Bookstore", "Gym", "Sightseeing walk"]
       }
     },
     {
@@ -100,33 +91,71 @@ window.QUESTIONS = {
         en: "If you want to focus on studying or working, which place would you choose?"
       },
       options: {
-        ja: ["カフェ", "図書館", "コワーキングスペース", "自宅の書斎", "静かな公園", "カラオケボックス", "ファミリーレストラン", "ホテルのロビー"],
-        en: ["Cafe", "Library", "Coworking space", "Home study room", "Quiet park", "Karaoke room", "Family restaurant", "Hotel lobby"]
+        ja: ["家の机", "図書館", "カフェ", "コワーキングスペース", "研究室", "公園のベンチ", "電車の中", "友達の家"],
+        en: ["Desk at home", "Library", "Cafe", "Coworking space", "Laboratory", "Park bench", "On the train", "Friend's place"]
       }
     },
     {
-      question_id: "travel_style",
+      question_id: "movie_genre",
       question: {
-        ja: "次の休暇に行くなら、どの旅行スタイルを選びますか？",
-        en: "For your next vacation, which travel style would you choose?"
+        ja: "好きな映画のジャンルを1つ選んでください。",
+        en: "What kind of movies do you like?"
       },
       options: {
-        ja: ["温泉でのんびり", "大自然でキャンプ", "海外の歴史都市巡り", "高級ホテルでホカンス", "テーマパーク巡り", "ローカルグルメ旅", "一人旅バックパッカー", "豪華客船クルーズ"],
-        en: ["Relaxing at hot springs", "Camping in nature", "Exploring historic cities abroad", "Staycation at a luxury hotel", "Theme park tour", "Local food tour", "Solo backpacking trip", "Luxury cruise ship"]
+        ja: ["コメディ", "ホラー", "アクション", "恋愛", "SF", "アニメ", "ドキュメンタリー", "ミステリー"],
+        en: ["Comedy", "Horror", "Action", "Romance", "Sci-fi", "Anime", "Documentary", "Mystery"]
       }
     }
   ],
+
+  // One extra main question differs by block size while keeping the same data schema and row counts.
+  specialMain: {
+    2: {
+      question_id: "beverage_choice",
+      question: {
+        ja: "実際に飲みたくなくても、直感でどちらの方が飲みたいか選んでください。",
+        en: "Even if you do not actually want a drink right now, choose which one you would prefer intuitively."
+      },
+      options: {
+        ja: ["コーヒー", "お茶"],
+        en: ["Coffee", "Tea"]
+      }
+    },
+    4: {
+      question_id: "ai_tool",
+      question: {
+        ja: "今使うなら、どのAIツールを選びますか？",
+        en: "Which AI tool would you choose to use now?"
+      },
+      options: {
+        ja: ["ChatGPT", "Gemini", "Claude", "xAI"],
+        en: ["ChatGPT", "Gemini", "Claude", "xAI"]
+      }
+    },
+    8: {
+      question_id: "favorite_color",
+      question: {
+        ja: "好きな色を1つ選んでください。",
+        en: "Choose one color you like."
+      },
+      options: {
+        ja: ["赤", "青", "緑", "黄色", "紫", "ピンク", "黒", "白"],
+        en: ["Red", "Blue", "Green", "Yellow", "Purple", "Pink", "Black", "White"]
+      }
+    }
+  },
+
   bonus: {
     members: {
       ja: ["Taiki", "Adrian Nadikita", "Julyet", "Neo", "shasenem", "ヒューゴ・Hugo", "Vanessa", "~Daichi DA"],
       en: ["Taiki", "Adrian Nadikita", "Julyet", "Neo", "shasenem", "ヒューゴ・Hugo", "Vanessa", "~Daichi DA"]
     },
     questions: [
-      { question_id: "bonus_ai_era", text: { ja: "この中で一番AI時代に強そうな人は？", en: "Who seems the strongest in the AI era?" } },
-      { question_id: "bonus_leader", text: { ja: "この中で一番リーダーっぽい人は？", en: "Who seems most like a leader?" } },
-      { question_id: "bonus_lost", text: { ja: "この中で一番旅行で迷子になりそうな人は？", en: "Who is most likely to get lost while traveling?" } },
-      { question_id: "bonus_researcher", text: { ja: "この中で一番研究者っぽい人は？", en: "Who seems most like a researcher?" } },
-      { question_id: "bonus_founder", text: { ja: "この中で一番起業しそうな人は？", en: "Who is most likely to start a company?" } }
+      { question_id: "bonus_night_walk", text: { ja: "二人で夜出かけるなら誰がいい？", en: "Who would you choose for a nighttime walk together?" } },
+      { question_id: "bonus_reliable", text: { ja: "この中で一番頼りになる人は？", en: "Who seems the most dependable?" } },
+      { question_id: "bonus_cooking", text: { ja: "この中で一番料理を食べてみたい人は？", en: "Whose cooking would you most want to try?" } },
+      { question_id: "bonus_reachable", text: { ja: "この中で一番早く連絡がつかまりそうな人は？", en: "Who seems easiest to reach quickly?" } },
+      { question_id: "bonus_marriage", text: { ja: "この中で一番早く結婚しそうな人は？", en: "Who seems most likely to get married first?" } }
     ]
   }
 };
