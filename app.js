@@ -1,7 +1,10 @@
 (() => {
   const L = {
     ja: {
-      startLead: "ヒックの法則に基づく選択実験です。", participantId: "参加者ID", start: "開始",
+      startLead: "ヒックの法則に基づく選択実験です。",
+      participantId: "お名前・ニックネーム・合言葉があれば入力してください（任意）",
+      startHelper: "匿名でも参加できます。合言葉や番号を受け取っている場合は、それを入力してください。",
+      start: "開始",
       instructionsEyebrow: "説明", instructionsTitle: "実験の説明", begin: "実験を始める",
       instructions: [
         "正解・不正解はありません。",
@@ -23,7 +26,10 @@
       failTitle: "送信できませんでした", failMessage: "データは失われていません。下のJSONをコピーまたはダウンロードして実験者へ渡してください。"
     },
     en: {
-      startLead: "A choice experiment based on Hick's Law.", participantId: "Participant ID", start: "Start",
+      startLead: "A choice experiment based on Hick's Law.",
+      participantId: "Name, nickname, or access code (optional)",
+      startHelper: "You can participate anonymously. If you received an access code, please enter it here.",
+      start: "Start",
       instructionsEyebrow: "Instructions", instructionsTitle: "Experiment Instructions", begin: "Begin experiment",
       instructions: [
         "There are no right or wrong answers.",
@@ -59,8 +65,14 @@
   }
   
   function getType(id) {
-    const u = id.toUpperCase();
-    return u.startsWith("TEST") ? "TEST" : u.startsWith("T") ? "T" : u.startsWith("P") ? "P" : "OTHER";
+    if (!id) return "ANON";
+    const u = id.trim().toUpperCase();
+    if (u.startsWith("ANON-")) return "ANON";
+    if (u.startsWith("PUBLIC-")) return "PUBLIC";
+    if (/^TEST[-_]?\d+/i.test(u)) return "TEST";
+    if (/^T[-_]?\d+/i.test(u)) return "T";
+    if (/^P[-_]?\d+/i.test(u)) return "P";
+    return "PUBLIC";
   }
   
   function hash(s) {
@@ -183,9 +195,21 @@
   function start() {
     S.lang = $("language-select").value;
     applyLang();
-    S.id = $("participant-id").value.trim();
-    if (!S.id) { $("start-error").textContent = txt("startError"); return; }
-    S.type = getType(S.id);
+    const rawId = $("participant-id").value.trim();
+    S.type = getType(rawId);
+    
+    if (S.type === "T" || S.type === "P" || S.type === "TEST") {
+      S.id = rawId;
+    } else {
+      const timestamp = Date.now();
+      const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+      if (S.type === "ANON") {
+        S.id = `ANON-${timestamp}-${rand}`;
+      } else {
+        S.id = `PUBLIC-${timestamp}-${rand}`;
+      }
+    }
+    
     S.sid = `${S.id}-${Date.now()}`;
     S.sessionStart = performance.now();
     S.rows = [];

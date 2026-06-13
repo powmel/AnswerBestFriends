@@ -58,10 +58,11 @@ Because the same 5 question categories are repeated across three conditions (2, 
 
 ## 4. Participant ID Rules
 
-*   **`P` prefix** (e.g., `P001`): Regular participant. They go through the **Filler + 3 Main blocks (17 trials total)**.
-*   **`T` prefix** (e.g., `T001`): Acquaintance/friend participant. They go through the **Filler + 3 Main blocks + Bonus block (22 trials total)**.
-*   **`TEST` prefix** (e.g., `TEST001`): Testing run. Excluded from analysis.
-*   **Other inputs**: Evaluated as `OTHER`.
+*   **`P` prefix** (e.g., `P001`): Regular participant. Saved as raw code. `participant_type = "P"`. No bonus block (17 trials total).
+*   **`T` prefix** (e.g., `T001`): Acquaintance/friend participant. Saved as raw code. `participant_type = "T"`. Includes bonus block (22 trials total).
+*   **`TEST` prefix** (e.g., `TEST001`): Testing run. Saved as raw code. `participant_type = "TEST"`. Includes bonus block (22 trials total).
+*   **Empty input**: Anonymous participant. Generates and saves an ID of format `ANON-[timestamp]-[random]` to preserve anonymity. `participant_type = "ANON"`. No bonus block (17 trials total).
+*   **Other inputs (name/nickname)**: General public participant. Generates and saves an ID of format `PUBLIC-[timestamp]-[random]` to preserve anonymity (the raw name is NOT stored). `participant_type = "PUBLIC"`. No bonus block (17 trials total).
 
 ---
 
@@ -71,8 +72,8 @@ Every trial logs a record containing the following columns:
 
 | Column | Type | Description |
 |---|---|---|
-| `participant_id` | String | User-entered identifier |
-| `participant_type` | String | `P`, `T`, `TEST`, or `OTHER` |
+| `participant_id` | String | Unique identifier (raw code, or generated ANON/PUBLIC ID) |
+| `participant_type` | String | `P`, `T`, `TEST`, `ANON`, or `PUBLIC` |
 | `language` | String | `ja` or `en` |
 | `session_id` | String | Session UUID |
 | `trial_id` | Integer | Trial index in current session (1 to 17 or 22) |

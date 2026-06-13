@@ -54,11 +54,12 @@ Within each block, these 5 categories are shuffled using the participant ID seed
 
 ## Participant IDs
 
-- `P001`, `P002`, ...: normal participants, main experiment only (17 trials)
-- `T001`, `T002`, ...: friend participants, main experiment plus bonus questions (22 trials total: 17 main/filler + 5 bonus)
-- `T006`: Hugo himself (English, custom bonus questions about message to everyone and Tsukuba/Japan memories)
-- `TEST001`, ...: testing data, exclude from final analysis (includes bonus phase)
-- Other IDs: accepted as `OTHER`
+- `P001`, `P002`, ...: normal participants, main experiment only (17 trials; `participant_type = "P"`)
+- `T001`, `T002`, ...: friend participants, main experiment plus bonus questions (22 trials total: 17 main/filler + 5 bonus; `participant_type = "T"`)
+- `T006`: Hugo himself (custom English bonus questions; `participant_type = "T"`)
+- `TEST001`, ...: testing data, exclude from final analysis (22 trials total; `participant_type = "TEST"`)
+- Empty input: Anonymous participant, generates format `ANON-[timestamp]-[random]` to preserve anonymity (17 trials total; `participant_type = "ANON"`)
+- Other inputs (name/nickname): General public participant, generates format `PUBLIC-[timestamp]-[random]` to preserve anonymity without storing raw name input (17 trials total; `participant_type = "PUBLIC"`)
 
 ### Bonus Block Questions (T / TEST only)
 1.  **AI时代**: Choice from 8 acquaintance member cards (grid layout with cover images and name tags).

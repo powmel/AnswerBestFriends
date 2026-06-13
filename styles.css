@@ -108,6 +108,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .rating-options input:checked + span { background: var(--focus); color: white; border-color: var(--focus); }
 
 .error { color: var(--error); font-weight: 700; min-height: 1.2em; }
+.help-text { color: var(--muted); font-size: 0.85rem; margin-top: 8px; margin-bottom: 0; line-height: 1.4; }
 .hidden { display: none; }
 .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
 

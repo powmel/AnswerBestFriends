@@ -17,8 +17,9 @@
         <option value="ja">日本語</option>
         <option value="en">English</option>
       </select>
-      <label for="participant-id" data-i18n="participantId">参加者ID</label>
-      <input id="participant-id" type="text" placeholder="P001 / T001 / TEST001" autocomplete="off">
+      <label for="participant-id" data-i18n="participantId">お名前・ニックネーム・合言葉があれば入力してください（任意）</label>
+      <input id="participant-id" type="text" autocomplete="off">
+      <p class="help-text" data-i18n="startHelper">匿名でも参加できます。合言葉や番号を受け取っている場合は、それを入力してください。</p>
       <p id="start-error" class="error" aria-live="polite"></p>
       <button id="start-button" class="primary" data-i18n="start">開始</button>
     </section>
