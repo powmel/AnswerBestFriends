@@ -23,7 +23,15 @@
       submitEyebrow: "送信", copyJson: "JSONをコピー", downloadJson: "JSONをダウンロード",
       startError: "参加者IDを入力してください。", ratingError: "3項目すべてに回答してください。",
       sending: "データ送信中...", successTitle: "完了しました", successMessage: "ご協力ありがとうございました。データ送信に成功しました。",
-      failTitle: "送信できませんでした", failMessage: "データは失われていません。下のJSONをコピーまたはダウンロードして実験者へ渡してください。"
+      failTitle: "送信できませんでした", failMessage: "データは失われていません。下のJSONをコピーまたはダウンロードして実験者へ渡してください。",
+      choiceStyleHeading: "今日のあなたの選択スタイル",
+      choiceStyles: {
+        quick: { name: "即決タイプ", desc: "どの選択肢数でも比較的すばやく選べていました。直感で決めるのが得意なタイプかもしれません。" },
+        careful: { name: "じっくり比較タイプ", desc: "選択肢が増えるほど、少し時間をかけて比較する傾向がありました。候補をしっかり見比べるタイプかもしれません。" },
+        balanced: { name: "バランス型", desc: "選択肢数が変わっても、比較的安定したペースで選んでいました。直感と比較のバランスが取れているタイプかもしれません。" },
+        explorer: { name: "選択肢多めでも楽しめるタイプ", desc: "選択肢が多くなっても、あまりペースを崩さずに選べていました。多くの候補を見ることに慣れているタイプかもしれません。" },
+        thoughtful: { name: "慎重セレクタータイプ", desc: "全体的に少し時間をかけて選ぶ傾向がありました。一つひとつを丁寧に考えるタイプかもしれません。" }
+      }
     },
     en: {
       startLead: "A choice experiment based on Hick's Law.",
@@ -48,7 +56,15 @@
       submitEyebrow: "Submit", copyJson: "Copy JSON", downloadJson: "Download JSON",
       startError: "Please enter a participant ID.", ratingError: "Please answer all three rating items.",
       sending: "Submitting data...", successTitle: "Completed", successMessage: "Thank you. Your data was submitted successfully.",
-      failTitle: "Submission failed", failMessage: "Your data has not been lost. Please copy or download the JSON below and send it to the experimenter."
+      failTitle: "Submission failed", failMessage: "Your data has not been lost. Please copy or download the JSON below and send it to the experimenter.",
+      choiceStyleHeading: "Your choice style today",
+      choiceStyles: {
+        quick: { name: "Quick Decider", desc: "You made choices relatively quickly across different numbers of options. You may be good at deciding intuitively." },
+        careful: { name: "Careful Comparator", desc: "You tended to take more time as the number of options increased. You may prefer comparing options carefully." },
+        balanced: { name: "Balanced Chooser", desc: "Your decision time stayed relatively stable across different numbers of options. You may balance intuition and comparison well." },
+        explorer: { name: "Many-Options Explorer", desc: "Even with more options, your pace did not slow down much. You may be comfortable exploring many choices." },
+        thoughtful: { name: "Thoughtful Selector", desc: "You tended to take a bit more time overall. You may be the type who thinks carefully before choosing." }
+      }
     }
   };
 
@@ -518,6 +534,45 @@
     }
   }
 
+  // Light, non-diagnostic feedback based only on this session's main-phase
+  // reaction times. This is NOT a personality test and is display-only; nothing
+  // here is saved or sent. Filler and bonus trials are excluded.
+  function computeChoiceStyle() {
+    const mainRows = S.rows.filter((r) => r.phase === "main" && r.is_bonus === false && r.is_filler === false);
+    const groups = { 2: [], 4: [], 8: [] };
+    mainRows.forEach((r) => {
+      if (groups[r.option_count] && typeof r.reaction_time_ms === "number") {
+        groups[r.option_count].push(r.reaction_time_ms);
+      }
+    });
+    const mean = (arr) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null);
+    const avg2 = mean(groups[2]), avg4 = mean(groups[4]), avg8 = mean(groups[8]);
+    const available = [avg2, avg4, avg8].filter((v) => v !== null);
+    if (!available.length) return "balanced";
+    const overall = available.reduce((a, b) => a + b, 0) / available.length;
+
+    const QUICK_MS = 700;   // overall fast
+    const LONG_MS = 1200;   // overall slow
+    const RATIO = 1.4;      // "notably slower" multiplier
+
+    // Rule-based, order matters.
+    if (overall < QUICK_MS) return "quick";
+    if (avg2 !== null && avg4 !== null && avg8 !== null &&
+        avg2 < avg4 && avg4 < avg8 && avg8 >= avg2 * RATIO) return "careful";
+    if (overall >= LONG_MS) return "thoughtful";
+    if (avg4 !== null && avg8 !== null && avg8 <= avg4 * 1.1) return "explorer";
+    return "balanced";
+  }
+
+  function renderChoiceStyle() {
+    const key = computeChoiceStyle();
+    const style = txt("choiceStyles")[key] || txt("choiceStyles").balanced;
+    $("choice-style-heading").textContent = txt("choiceStyleHeading");
+    $("choice-style-name").textContent = style.name;
+    $("choice-style-desc").textContent = style.desc;
+    $("choice-style").classList.remove("hidden");
+  }
+
   async function submit() {
     show("submit-screen");
     $("submit-title").textContent = txt("sending");
@@ -531,6 +586,9 @@
       row.session_end_time = finalNow;
       row.total_time_ms = finalTotal;
     });
+
+    // Show the light choice-style feedback (display only; not part of the payload).
+    renderChoiceStyle();
 
     const payload = JSON.stringify(S.rows, null, 2);
     const url = window.CONFIG?.GAS_WEB_APP_URL || "";

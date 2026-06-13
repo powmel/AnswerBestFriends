@@ -208,6 +208,31 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   margin-top: 2px;
 }
 
+/* Light choice-style feedback on the completion screen (display only) */
+.choice-style {
+  margin-top: 24px;
+  padding: clamp(16px, 3vw, 22px);
+  background: #eef4ff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+.choice-style h3 {
+  margin: 0 0 10px;
+  font-size: clamp(1rem, 3.2vw, 1.15rem);
+  color: var(--text);
+}
+.choice-style-name {
+  margin: 0 0 8px;
+  font-weight: 800;
+  font-size: clamp(1.2rem, 4.5vw, 1.45rem);
+  color: var(--focus);
+}
+.choice-style-desc {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
 /* Free text message input area */
 .text-input-area {
   display: flex;
