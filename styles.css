@@ -127,7 +127,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 }
 
 .option-list.grid-bonus {
-  grid-template-columns: repeat(4, 1fr);
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin-top: 12px;
 }
@@ -143,6 +144,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   cursor: pointer;
   transition: border-color 0.2s, background-color 0.2s;
   width: 100%;
+  min-width: 0;
   min-height: auto;
   text-align: center;
 }

@@ -58,12 +58,32 @@
   const show = (id) => screens.forEach((s) => $(s).classList.toggle("active", s === id));
   const txt = (k) => L[S.lang][k];
   
-  function resetTrialUI() {
-    $("text-input-area").classList.add("hidden");
-    $("option-list").classList.remove("hidden");
-    $("option-list").classList.remove("grid-2");
-    $("option-list").classList.remove("grid-bonus");
+  // Explicit, JS-driven visibility of the free-text input. We do not rely on CSS
+  // alone: the `hidden` attribute + class are both toggled so a stale stylesheet
+  // can never leak the textarea into a screen that must not show it.
+  function showTextInput() {
+    const area = $("text-input-area");
+    area.classList.remove("hidden");
+    area.hidden = false;
+    area.style.display = "flex";
+  }
+
+  function hideTextInput() {
+    const area = $("text-input-area");
+    area.classList.add("hidden");
+    area.hidden = true;
+    area.style.display = "none";
     $("free-text-input").value = "";
+  }
+
+  function resetTrialUI() {
+    hideTextInput();
+    const ol = $("option-list");
+    ol.innerHTML = "";
+    ol.classList.remove("hidden");
+    ol.hidden = false;
+    ol.classList.remove("grid-2");
+    ol.classList.remove("grid-bonus");
   }
 
   function applyLang() {
@@ -404,20 +424,22 @@
     $("question-text").textContent = trial.question_text;
     
     if (trial.type === "text") {
-      // Free text inputs layout
+      // Free text inputs layout (bonus trials 4 & 5 only)
       $("option-list").classList.add("hidden");
-      $("text-input-area").classList.remove("hidden");
-      
+      $("option-list").hidden = true;
+      showTextInput();
+
       const textarea = $("free-text-input");
-      
+
       $("free-text-submit-button").onclick = () => {
         const textVal = textarea.value.trim();
         chooseBonus(textVal);
       };
     } else if (trial.type === "member_card") {
-      // Photo cards selection layout
+      // Photo cards selection layout (bonus trials 1-3): textarea stays hidden
+      hideTextInput();
       $("option-list").classList.add("grid-bonus");
-      
+
       $("option-list").innerHTML = "";
       trial.options.forEach((opName) => {
         const memberInfo = window.QUESTIONS.bonus.members.find(m => m.name === opName) || { name: opName, image: "" };
