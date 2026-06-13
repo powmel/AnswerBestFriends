@@ -30,7 +30,24 @@
         careful: { name: "じっくり比較タイプ", desc: "選択肢が増えるほど、少し時間をかけて比較する傾向がありました。候補をしっかり見比べるタイプかもしれません。" },
         balanced: { name: "バランス型", desc: "選択肢数が変わっても、比較的安定したペースで選んでいました。直感と比較のバランスが取れているタイプかもしれません。" },
         explorer: { name: "選択肢多めでも楽しめるタイプ", desc: "選択肢が多くなっても、あまりペースを崩さずに選べていました。多くの候補を見ることに慣れているタイプかもしれません。" },
-        thoughtful: { name: "慎重セレクタータイプ", desc: "全体的に少し時間をかけて選ぶ傾向がありました。一つひとつを丁寧に考えるタイプかもしれません。" }
+        thoughtful: { name: "慎重セレクタータイプ", desc: "全体的に少し時間をかけて選ぶ傾向がありました。一つひとつを丁寧に考えるタイプかもしれません。" },
+        theme_sensitive: { name: "テーマで変わるタイプ", desc: "テーマによって、選ぶ速さが少し変わる傾向がありました。内容によってじっくり考えることがあるタイプかもしれません。" }
+      },
+      cs: {
+        pointsTitle: "見ていたポイント：",
+        points: [
+          "2択 / 4択 / 8択で選ぶ速さ",
+          "選択肢が増えたときの変化",
+          "どのテーマで少し時間をかけたか"
+        ],
+        patternTitle: "今回の回答傾向：",
+        fast2: "2択は比較的すばやく選んでいました",
+        slow2: "2択でも少し時間をかけて選んでいました",
+        slow8: "8択では少し時間をかけていました",
+        steady8: "8択でもペースは大きく変わりませんでした",
+        themeFast: "{t}の質問は比較的すぐ決めていました",
+        themeSlow: "{t}の質問では少し時間をかけていました",
+        themes: { food: "食べ物", weekend_place: "週末の行き先", study_place: "勉強・作業の場所", movie_genre: "映画ジャンル", beverage_choice: "飲み物", ai_tool: "AIツール", favorite_color: "好きな色" }
       }
     },
     en: {
@@ -60,10 +77,27 @@
       choiceStyleHeading: "Your choice style today",
       choiceStyles: {
         quick: { name: "Quick Decider", desc: "You made choices relatively quickly across different numbers of options. You may be good at deciding intuitively." },
-        careful: { name: "Careful Comparator", desc: "You tended to take more time as the number of options increased. You may prefer comparing options carefully." },
+        careful: { name: "Careful Comparator", desc: "You tended to take a little more time as the number of options increased. You may prefer comparing options carefully." },
         balanced: { name: "Balanced Chooser", desc: "Your decision time stayed relatively stable across different numbers of options. You may balance intuition and comparison well." },
         explorer: { name: "Many-Options Explorer", desc: "Even with more options, your pace did not slow down much. You may be comfortable exploring many choices." },
-        thoughtful: { name: "Thoughtful Selector", desc: "You tended to take a bit more time overall. You may be the type who thinks carefully before choosing." }
+        thoughtful: { name: "Thoughtful Selector", desc: "You tended to take a bit more time overall. You may be the type who thinks carefully before choosing." },
+        theme_sensitive: { name: "Theme-Sensitive Chooser", desc: "Your pace shifted a little depending on the topic. You may think a bit more about certain themes than others." }
+      },
+      cs: {
+        pointsTitle: "What this looked at:",
+        points: [
+          "How quickly you chose in 2 / 4 / 8-option questions",
+          "How your pace changed when the number of options increased",
+          "Which themes took a little more time"
+        ],
+        patternTitle: "Your response pattern:",
+        fast2: "You chose relatively quickly in 2-option questions",
+        slow2: "You took a little time even in 2-option questions",
+        slow8: "You took a bit more time in 8-option questions",
+        steady8: "Your pace stayed about the same even with 8 options",
+        themeFast: "{t} questions were relatively quick for you",
+        themeSlow: "{t} questions took a little more comparison",
+        themes: { food: "Food", weekend_place: "Weekend place", study_place: "Study place", movie_genre: "Movie genre", beverage_choice: "Drink", ai_tool: "AI tool", favorite_color: "Color" }
       }
     }
   };
@@ -534,42 +568,89 @@
     }
   }
 
-  // Light, non-diagnostic feedback based only on this session's main-phase
+  // Common main themes used for the light "theme" observations. The special-block
+  // questions (beverage_choice / ai_tool / favorite_color) are auxiliary and are
+  // intentionally excluded from the fastest/slowest theme pick to keep it stable.
+  const COMMON_THEMES = ["food", "weekend_place", "study_place", "movie_genre"];
+
+  // Light, non-diagnostic analysis based ONLY on this session's main-phase
   // reaction times. This is NOT a personality test and is display-only; nothing
-  // here is saved or sent. Filler and bonus trials are excluded.
-  function computeChoiceStyle() {
+  // here is saved or sent. Filler, bonus and Special Questions are excluded.
+  function analyzeChoices() {
     const mainRows = S.rows.filter((r) => r.phase === "main" && r.is_bonus === false && r.is_filler === false);
     const groups = { 2: [], 4: [], 8: [] };
+    const themes = {};
     mainRows.forEach((r) => {
-      if (groups[r.option_count] && typeof r.reaction_time_ms === "number") {
-        groups[r.option_count].push(r.reaction_time_ms);
+      if (typeof r.reaction_time_ms !== "number") return;
+      if (groups[r.option_count]) groups[r.option_count].push(r.reaction_time_ms);
+      if (COMMON_THEMES.includes(r.question_id)) {
+        (themes[r.question_id] = themes[r.question_id] || []).push(r.reaction_time_ms);
       }
     });
-    const mean = (arr) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null);
+    const mean = (arr) => (arr && arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null);
     const avg2 = mean(groups[2]), avg4 = mean(groups[4]), avg8 = mean(groups[8]);
     const available = [avg2, avg4, avg8].filter((v) => v !== null);
-    if (!available.length) return "balanced";
-    const overall = available.reduce((a, b) => a + b, 0) / available.length;
+    const overall = available.length ? available.reduce((a, b) => a + b, 0) / available.length : null;
 
-    const QUICK_MS = 700;   // overall fast
-    const LONG_MS = 1200;   // overall slow
-    const RATIO = 1.4;      // "notably slower" multiplier
+    // Per-theme averages (common themes only).
+    const themeAvgs = Object.keys(themes)
+      .map((id) => ({ id, avg: mean(themes[id]) }))
+      .filter((t) => t.avg !== null)
+      .sort((a, b) => a.avg - b.avg);
+    let fastestTheme = null, slowestTheme = null, themeSpread = 1;
+    if (themeAvgs.length >= 2) {
+      fastestTheme = themeAvgs[0].id;
+      slowestTheme = themeAvgs[themeAvgs.length - 1].id;
+      themeSpread = themeAvgs[themeAvgs.length - 1].avg / themeAvgs[0].avg;
+    }
 
-    // Rule-based, order matters.
-    if (overall < QUICK_MS) return "quick";
-    if (avg2 !== null && avg4 !== null && avg8 !== null &&
-        avg2 < avg4 && avg4 < avg8 && avg8 >= avg2 * RATIO) return "careful";
-    if (overall >= LONG_MS) return "thoughtful";
-    if (avg4 !== null && avg8 !== null && avg8 <= avg4 * 1.1) return "explorer";
-    return "balanced";
+    let key = "balanced";
+    if (overall !== null) {
+      const QUICK_MS = 700, LONG_MS = 1200, RATIO = 1.4, THEME_SPREAD = 1.6;
+      if (overall < QUICK_MS) key = "quick";
+      else if (avg2 !== null && avg4 !== null && avg8 !== null && avg2 < avg4 && avg4 < avg8 && avg8 >= avg2 * RATIO) key = "careful";
+      else if (overall >= LONG_MS) key = "thoughtful";
+      else if (themeSpread >= THEME_SPREAD) key = "theme_sensitive";
+      else if (avg4 !== null && avg8 !== null && avg8 <= avg4 * 1.1) key = "explorer";
+      else key = "balanced";
+    }
+
+    return { key, avg2, avg4, avg8, overall, fastestTheme, slowestTheme };
   }
 
   function renderChoiceStyle() {
-    const key = computeChoiceStyle();
-    const style = txt("choiceStyles")[key] || txt("choiceStyles").balanced;
+    const a = analyzeChoices();
+    const styles = txt("choiceStyles");
+    const cs = txt("cs");
+    const style = styles[a.key] || styles.balanced;
+
     $("choice-style-heading").textContent = txt("choiceStyleHeading");
     $("choice-style-name").textContent = style.name;
     $("choice-style-desc").textContent = style.desc;
+
+    // "What this looked at" — static, reassuring note about the limited scope.
+    $("choice-style-points-title").textContent = cs.pointsTitle;
+    $("choice-style-points-list").innerHTML = cs.points.map((p) => `<li>${p}</li>`).join("");
+
+    // "Your response pattern" — up to 4 light, relative observations.
+    const bullets = [];
+    if (a.overall !== null) {
+      if (a.avg2 !== null) bullets.push(a.avg2 <= a.overall ? cs.fast2 : cs.slow2);
+      if (a.avg8 !== null) bullets.push(a.avg8 >= a.overall * 1.08 ? cs.slow8 : cs.steady8);
+    }
+    if (a.fastestTheme && a.slowestTheme && a.fastestTheme !== a.slowestTheme) {
+      bullets.push(cs.themeFast.replace("{t}", cs.themes[a.fastestTheme] || a.fastestTheme));
+      bullets.push(cs.themeSlow.replace("{t}", cs.themes[a.slowestTheme] || a.slowestTheme));
+    }
+    const patternWrap = $("choice-style-pattern");
+    if (bullets.length) {
+      $("choice-style-pattern-title").textContent = cs.patternTitle;
+      $("choice-style-pattern-list").innerHTML = bullets.slice(0, 4).map((b) => `<li>${b}</li>`).join("");
+      patternWrap.classList.remove("hidden");
+    } else {
+      patternWrap.classList.add("hidden");
+    }
+
     $("choice-style").classList.remove("hidden");
   }
 

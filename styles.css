@@ -232,6 +232,23 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   color: var(--muted);
   line-height: 1.65;
 }
+.choice-style-block { margin-top: 14px; }
+.choice-style-block h4 {
+  margin: 0 0 6px;
+  font-size: clamp(0.9rem, 2.8vw, 1rem);
+  color: var(--text);
+}
+.choice-style-block ul {
+  margin: 0;
+  padding-left: 1.2em;
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: clamp(0.85rem, 2.6vw, 0.95rem);
+}
+.choice-style-block li { margin: 3px 0; }
+/* Scope note is intentionally a touch smaller and lighter than the pattern list. */
+.choice-style-points h4 { font-weight: 700; opacity: 0.85; }
+.choice-style-points ul { font-size: clamp(0.8rem, 2.4vw, 0.88rem); opacity: 0.9; }
 
 /* Free text message input area */
 .text-input-area {
