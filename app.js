@@ -153,22 +153,31 @@
   }
 
   function bonusQueue() {
-    const opts = window.QUESTIONS.bonus.members[S.lang];
-    return window.QUESTIONS.bonus.questions.map((q) => ({
-      phase: "bonus",
-      is_bonus: true,
-      is_filler: false,
-      condition: "bonus",
-      option_count: opts.length,
-      question_id: q.question_id,
-      question_text: q.text[S.lang],
-      options: opts,
-      block_id: "bonus",
-      block_index: null,
-      trial_in_block: null,
-      block_option_count: null,
-      rating_scope: "none"
-    }));
+    const isHugo = S.id.toUpperCase() === "T006";
+    const opts = window.QUESTIONS.bonus.members;
+    
+    return window.QUESTIONS.bonus.questions.map((q) => {
+      const qText = q.type === "text"
+        ? (isHugo ? q.hugo_text[S.lang] : q.text[S.lang])
+        : q.text[S.lang];
+        
+      return {
+        phase: "bonus",
+        is_bonus: true,
+        is_filler: false,
+        condition: "bonus",
+        option_count: q.type === "text" ? 0 : opts.length,
+        question_id: q.question_id,
+        question_text: qText,
+        options: q.type === "text" ? [] : opts.map(o => o.name),
+        type: q.type, // 'select' or 'text'
+        block_id: "bonus",
+        block_index: null,
+        trial_in_block: null,
+        block_option_count: null,
+        rating_scope: "none"
+      };
+    });
   }
 
   function start() {
@@ -197,6 +206,11 @@
     S.current = trial;
     S.selected = null;
     
+    // UI states reset for normal multiple choice layout
+    $("option-list").classList.remove("grid-2");
+    $("option-list").classList.remove("hidden");
+    $("text-input-area").classList.add("hidden");
+
     // Adjust progress labels depending on trial phase
     if (trial.phase === "filler") {
       $("progress").textContent = S.lang === "ja" 
@@ -357,14 +371,63 @@
       : `Bonus Task: ${S.idx + 1} / ${S.bonus.length}`;
       
     $("question-text").textContent = trial.question_text;
-    $("option-list").innerHTML = "";
-    trial.options.forEach((op) => {
-      const b = document.createElement("button");
-      b.className = "option-button";
-      b.textContent = op;
-      b.onclick = () => chooseBonus(op);
-      $("option-list").appendChild(b);
-    });
+    
+    if (trial.type === "text") {
+      // Free text inputs layout
+      $("option-list").classList.add("hidden");
+      $("text-input-area").classList.remove("hidden");
+      
+      const textarea = $("free-text-input");
+      textarea.value = "";
+      
+      $("free-text-submit-button").onclick = () => {
+        const textVal = textarea.value.trim();
+        chooseBonus(textVal);
+      };
+    } else {
+      // Photo cards selection layout
+      $("option-list").classList.remove("hidden");
+      $("option-list").classList.add("grid-2");
+      $("text-input-area").classList.add("hidden");
+      
+      $("option-list").innerHTML = "";
+      trial.options.forEach((opName) => {
+        const memberInfo = window.QUESTIONS.bonus.members.find(m => m.name === opName) || { name: opName, image: "" };
+        
+        const b = document.createElement("button");
+        b.className = "member-card";
+        
+        const img = document.createElement("img");
+        img.src = memberInfo.image;
+        img.alt = memberInfo.name;
+        
+        const placeholder = document.createElement("div");
+        placeholder.className = "member-card-placeholder hidden";
+        placeholder.textContent = memberInfo.name.slice(0, 2);
+        
+        if (!memberInfo.image) {
+          placeholder.classList.remove("hidden");
+        } else {
+          img.onerror = () => {
+            img.classList.add("hidden");
+            placeholder.classList.remove("hidden");
+          };
+        }
+        
+        const nameSpan = document.createElement("div");
+        nameSpan.className = "member-card-name";
+        nameSpan.textContent = memberInfo.name;
+        
+        if (memberInfo.image) {
+          b.appendChild(img);
+        }
+        b.appendChild(placeholder);
+        b.appendChild(nameSpan);
+        
+        b.onclick = () => chooseBonus(opName);
+        $("option-list").appendChild(b);
+      });
+    }
     
     show("trial-screen");
     requestAnimationFrame(() => { S.startMs = performance.now(); });

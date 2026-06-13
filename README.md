@@ -39,6 +39,11 @@ To improve data validity and mitigate cognitive load, the experiment is partitio
 3.  **Bonus Block (余興)**:
     *   Presented for friend participants (`T` prefix) or test runs (`TEST` prefix).
     *   **5 trials** of acquaintance questions. Ratings are completely skipped.
+    *   **Question structure**:
+        *   **Trials 1-3 (Select)**: Choice from 8 acquaintance member cards shown in a 2-column grid with pictures (`assets/members/*.jpg`) and names, falling back to name initials if images fail to load.
+        *   **Trials 4-5 (Free-text)**: Free text response area.
+            *   *For T006 (Hugo)*: Custom questions about message to everyone and memories of Japan/Tsukuba/friends.
+            *   *For other participants*: Message/memories for Hugo.
     *   Marked with `phase = "bonus"`, `is_bonus = true`, `is_filler = false`. Excluded from main analysis.
 
 ---

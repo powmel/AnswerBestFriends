@@ -146,16 +146,32 @@ window.QUESTIONS = {
   },
 
   bonus: {
-    members: {
-      ja: ["Taiki", "Adrian Nadikita", "Julyet", "Neo", "shasenem", "ヒューゴ・Hugo", "Vanessa", "~Daichi DA"],
-      en: ["Taiki", "Adrian Nadikita", "Julyet", "Neo", "shasenem", "ヒューゴ・Hugo", "Vanessa", "~Daichi DA"]
-    },
+    members: [
+      { name: "Taiki", image: "assets/members/taiki.jpg" },
+      { name: "Adrian Nadikita", image: "assets/members/adrian.jpg" },
+      { name: "Julyet", image: "assets/members/julyet.jpg" },
+      { name: "Neo", image: "assets/members/neo.jpg" },
+      { name: "shasenem", image: "assets/members/shasenem.jpg" },
+      { name: "ヒューゴ・Hugo", image: "assets/members/hugo.jpg" },
+      { name: "Vanessa", image: "assets/members/vanessa.jpg" },
+      { name: "~Daichi DA", image: "assets/members/daichi.jpg" }
+    ],
     questions: [
-      { question_id: "bonus_night_walk", text: { ja: "二人で夜出かけるなら誰がいい？", en: "Who would you choose for a nighttime walk together?" } },
-      { question_id: "bonus_reliable", text: { ja: "この中で一番頼りになる人は？", en: "Who seems the most dependable?" } },
-      { question_id: "bonus_cooking", text: { ja: "この中で一番料理を食べてみたい人は？", en: "Whose cooking would you most want to try?" } },
-      { question_id: "bonus_reachable", text: { ja: "この中で一番早く連絡がつかまりそうな人は？", en: "Who seems easiest to reach quickly?" } },
-      { question_id: "bonus_marriage", text: { ja: "この中で一番早く結婚しそうな人は？", en: "Who seems most likely to get married first?" } }
+      { question_id: "bonus_ai_era", type: "select", text: { ja: "この中で一番AI時代に強そうな人は？", en: "Who seems the strongest in the AI era?" } },
+      { question_id: "bonus_leader", type: "select", text: { ja: "この中で一番リーダーっぽい人は？", en: "Who seems most like a leader?" } },
+      { question_id: "bonus_researcher", type: "select", text: { ja: "この中で一番研究者っぽい人は？", en: "Who seems most like a researcher?" } },
+      {
+        question_id: "bonus_message",
+        type: "text",
+        text: { ja: "Hugoに伝えたいメッセージはありますか？", en: "Do you have any messages for Hugo?" },
+        hugo_text: { ja: "みんなに伝えたいメッセージはありますか？", en: "Do you have any messages for everyone?" }
+      },
+      {
+        question_id: "bonus_memories",
+        type: "text",
+        text: { ja: "Hugoとの思い出や印象があれば書いてください。", en: "Please share your memories or impressions of Hugo." },
+        hugo_text: { ja: "日本・筑波・友達との思い出で残しておきたいことはありますか？", en: "Please write down any memories of Japan, Tsukuba, or friends that you would like to keep." }
+      }
     ]
   }
 };

@@ -55,9 +55,17 @@ Within each block, these 5 categories are shuffled using the participant ID seed
 ## Participant IDs
 
 - `P001`, `P002`, ...: normal participants, main experiment only (17 trials)
-- `T001`, `T002`, ...: friend participants, main experiment plus bonus questions (22 trials)
-- `TEST001`, ...: testing data, exclude from final analysis
+- `T001`, `T002`, ...: friend participants, main experiment plus bonus questions (22 trials total: 17 main/filler + 5 bonus)
+- `T006`: Hugo himself (English, custom bonus questions about message to everyone and Tsukuba/Japan memories)
+- `TEST001`, ...: testing data, exclude from final analysis (includes bonus phase)
 - Other IDs: accepted as `OTHER`
+
+### Bonus Block Questions (T / TEST only)
+1.  **AI时代**: Choice from 8 acquaintance member cards (grid layout with cover images and name tags).
+2.  **Leader**: Choice from 8 acquaintance member cards.
+3.  **Researcher**: Choice from 8 acquaintance member cards.
+4.  **Message**: Free-text textarea (Message to Hugo; or message to everyone if T006).
+5.  **Memories**: Free-text textarea (Memories with Hugo; or memories of Tsukuba/Japan/friends if T006).
 
 Main analysis should use only:
 
