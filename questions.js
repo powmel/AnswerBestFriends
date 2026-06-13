@@ -157,11 +157,22 @@ window.QUESTIONS = {
       { name: "~Daichi DA", image: "assets/members/daichi.jpg" }
     ],
     questions: [
-      { question_id: "bonus_night_out", type: "member_card", text: { ja: "二人で夜出かけるなら誰がいい？", en: "Who would you like to go out with at night?" } },
-      { question_id: "bonus_reliable", type: "member_card", text: { ja: "この中で一番頼りになる人は？", en: "Who seems the most reliable?" } },
-      { question_id: "bonus_cooking", type: "member_card", text: { ja: "この中で一番料理を食べてみたい人は？", en: "Whose cooking would you most like to try?" } },
-      { question_id: "bonus_reach", type: "member_card", text: { ja: "この中で一番早く連絡がつかまりそうな人は？", en: "Who seems the easiest to reach quickly?" } },
-      { question_id: "bonus_marry", type: "member_card", text: { ja: "この中で一番早く結婚しそうな人は？", en: "Who seems most likely to get married first?" } }
+      { question_id: "special_01", type: "member_card", text: { ja: "この中で一番、二人でこっそり抜け出そうと言い出しそうな人は？", en: "Who is most likely to suggest secretly leaving together?" } },
+      { question_id: "special_02", type: "member_card", text: { ja: "この中で一番、深夜テンションでやばいことを言いそうな人は？", en: "Who is most likely to say something unhinged late at night?" } },
+      { question_id: "special_03", type: "member_card", text: { ja: "この中で一番、恋愛相談をしたら話をめちゃくちゃにしそうな人は？", en: "Who is most likely to make your love-life advice even more chaotic?" } },
+      { question_id: "special_04", type: "member_card", text: { ja: "この中で一番、パーティーで突然消えそうな人は？", en: "Who is most likely to suddenly disappear at a party?" } },
+      { question_id: "special_05", type: "member_card", text: { ja: "この中で一番、飲み会で記憶をなくしそうな人は？", en: "Who is most likely to lose their memory after a party?" } },
+      { question_id: "special_06", type: "member_card", text: { ja: "この中で一番、翌朝起きたらなぜか隣にいそうな人は？", en: "Who is most likely to somehow be next to you the next morning?" } },
+      { question_id: "special_07", type: "member_card", text: { ja: "この中で一番、人生ノリで全財産を株に突っ込みそうな人は？", en: "Who is most likely to put all their money into stocks just for the vibe?" } },
+      { question_id: "special_08", type: "member_card", text: { ja: "この中で一番、将来カルト教祖になりそうな人は？", en: "Who is most likely to become a cult leader in the future?" } },
+      { question_id: "special_09", type: "member_card", text: { ja: "この中で一番、TikTokで炎上しそうな人は？", en: "Who is most likely to get cancelled on TikTok?" } },
+      { question_id: "special_10", type: "member_card", text: { ja: "この中で一番、最終的に全部うまくいってそうな人は？", en: "Who is most likely to somehow end up doing perfectly fine?" } },
+      {
+        question_id: "special_hugo_message",
+        type: "text",
+        text: { ja: "最後に、Hugoに伝えたいメッセージがあれば書いてください。", en: "Finally, if you have any message for Hugo, please write it here." },
+        hugo_text: { ja: "最後に、みんなに伝えたいメッセージがあれば書いてください。", en: "Finally, if you have any message for everyone, please write it here." }
+      }
     ]
   }
 };

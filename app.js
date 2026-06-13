@@ -19,7 +19,7 @@
         difficulty: "このブロック全体について、選ぶときにどの程度迷いましたか？",
         confidence: "このブロック全体について、選択にどの程度自信がありましたか？"
       },
-      bonusTitle: "余興質問", bonusLead: "ここからはT参加者向けの余興質問です。主分析には使いません。", bonusStart: "余興を開始する",
+      bonusTitle: "ここからは Special Questions です。", bonusLead: "ここからが本題です。直感で選んでください。", bonusStart: "始める",
       submitEyebrow: "送信", copyJson: "JSONをコピー", downloadJson: "JSONをダウンロード",
       startError: "参加者IDを入力してください。", ratingError: "3項目すべてに回答してください。",
       sending: "データ送信中...", successTitle: "完了しました", successMessage: "ご協力ありがとうございました。データ送信に成功しました。",
@@ -52,7 +52,7 @@
         difficulty: "Overall, how difficult was it to choose in this block?",
         confidence: "Overall, how confident were you in your choices in this block?"
       },
-      bonusTitle: "Bonus questions", bonusLead: "These fun questions are only for T participants and are excluded from the main analysis.", bonusStart: "Start bonus",
+      bonusTitle: "Now it’s time for Special Questions.", bonusLead: "This is where the real fun begins. Please choose intuitively.", bonusStart: "Start",
       submitEyebrow: "Submit", copyJson: "Copy JSON", downloadJson: "Download JSON",
       startError: "Please enter a participant ID.", ratingError: "Please answer all three rating items.",
       sending: "Submitting data...", successTitle: "Completed", successMessage: "Thank you. Your data was submitted successfully.",
@@ -436,8 +436,8 @@
     resetTrialUI();
 
     $("progress").textContent = S.lang === "ja"
-      ? `余興質問: ${S.idx + 1} / ${S.bonus.length}`
-      : `Bonus Task: ${S.idx + 1} / ${S.bonus.length}`;
+      ? `Special Questions: ${S.idx + 1} / ${S.bonus.length}`
+      : `Special Questions: ${S.idx + 1} / ${S.bonus.length}`;
       
     $("question-text").textContent = trial.question_text;
     
