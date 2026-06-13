@@ -57,6 +57,14 @@
   const screens = ["start-screen", "instruction-screen", "trial-screen", "rating-screen", "bonus-intro-screen", "submit-screen"];
   const show = (id) => screens.forEach((s) => $(s).classList.toggle("active", s === id));
   const txt = (k) => L[S.lang][k];
+  
+  function resetTrialUI() {
+    $("text-input-area").classList.add("hidden");
+    $("option-list").classList.remove("hidden");
+    $("option-list").classList.remove("grid-2");
+    $("option-list").classList.remove("grid-bonus");
+    $("free-text-input").value = "";
+  }
 
   function applyLang() {
     document.documentElement.lang = S.lang;
@@ -230,11 +238,7 @@
     S.current = trial;
     S.selected = null;
     
-    // UI states reset for normal multiple choice layout
-    $("option-list").classList.remove("grid-2");
-    $("option-list").classList.remove("grid-bonus");
-    $("option-list").classList.remove("hidden");
-    $("text-input-area").classList.add("hidden");
+    resetTrialUI();
 
     // Adjust progress labels depending on trial phase
     if (trial.phase === "filler") {
@@ -391,6 +395,8 @@
     S.current = trial;
     S.selected = null;
     
+    resetTrialUI();
+
     $("progress").textContent = S.lang === "ja"
       ? `余興質問: ${S.idx + 1} / ${S.bonus.length}`
       : `Bonus Task: ${S.idx + 1} / ${S.bonus.length}`;
@@ -403,7 +409,6 @@
       $("text-input-area").classList.remove("hidden");
       
       const textarea = $("free-text-input");
-      textarea.value = "";
       
       $("free-text-submit-button").onclick = () => {
         const textVal = textarea.value.trim();
@@ -411,10 +416,7 @@
       };
     } else if (trial.type === "member_card") {
       // Photo cards selection layout
-      $("option-list").classList.remove("hidden");
-      $("option-list").classList.remove("grid-2");
       $("option-list").classList.add("grid-bonus");
-      $("text-input-area").classList.add("hidden");
       
       $("option-list").innerHTML = "";
       trial.options.forEach((opName) => {
@@ -455,11 +457,6 @@
       });
     } else {
       // Normal options selection layout (fallback for standard choices if any)
-      $("option-list").classList.remove("hidden");
-      $("option-list").classList.remove("grid-2");
-      $("option-list").classList.remove("grid-bonus");
-      $("text-input-area").classList.add("hidden");
-      
       $("option-list").innerHTML = "";
       trial.options.forEach((op) => {
         const b = document.createElement("button");
