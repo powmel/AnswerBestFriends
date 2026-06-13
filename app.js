@@ -84,6 +84,8 @@
     ol.hidden = false;
     ol.classList.remove("grid-2");
     ol.classList.remove("grid-bonus");
+    // Compact mode is only for the bonus photo-card grid.
+    $("trial-screen").classList.remove("bonus-cards");
   }
 
   function applyLang() {
@@ -436,8 +438,11 @@
         chooseBonus(textVal);
       };
     } else if (trial.type === "member_card") {
-      // Photo cards selection layout (bonus trials 1-3): textarea stays hidden
+      // Photo cards selection layout (all bonus trials): textarea stays hidden.
+      // bonus-cards triggers the compact, viewport-adaptive layout so all 8
+      // cards fit on one screen without scrolling.
       hideTextInput();
+      $("trial-screen").classList.add("bonus-cards");
       $("option-list").classList.add("grid-bonus");
 
       $("option-list").innerHTML = "";
@@ -568,6 +573,17 @@
     a.download = `${S.id || "participant"}.json`;
     a.click();
   }
+
+  // Expose the real visible viewport height as a CSS variable. Mobile browsers
+  // report an unreliable 100vh (it ignores the address bar), so layouts that must
+  // fit on one screen (the bonus photo-card grid) size against --app-vh instead.
+  function setViewportVar() {
+    const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    document.documentElement.style.setProperty("--app-vh", `${h}px`);
+  }
+  setViewportVar();
+  window.addEventListener("resize", setViewportVar);
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", setViewportVar);
 
   $("language-select").onchange = (e) => { S.lang = e.target.value; applyLang(); };
   $("start-button").onclick = start;

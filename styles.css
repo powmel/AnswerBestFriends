@@ -80,16 +80,25 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 
 .option-list {
   display: grid;
-  gap: 14px;
-  margin-top: 28px;
+  gap: clamp(8px, 1.4vh, 14px);
+  margin-top: clamp(14px, 3vh, 28px);
 }
 .option-button {
   width: 100%;
   text-align: left;
-  padding: 18px 20px;
-  font-size: 1.05rem;
+  padding: clamp(11px, 1.9vh, 18px) clamp(14px, 4vw, 20px);
+  font-size: clamp(0.95rem, 2.6vw, 1.05rem);
+  line-height: 1.35;
+  min-height: clamp(44px, 6vh, 56px);
 }
 .option-button:hover { border-color: var(--focus); }
+
+/* The question heading scales down a little so it never crowds the options
+   off-screen, while staying clearly readable. */
+#question-text {
+  font-size: clamp(1.2rem, 4.2vw, 2rem);
+  margin-bottom: clamp(10px, 2vh, 16px);
+}
 
 .rating-form { display: grid; gap: 24px; margin-top: 22px; }
 .rating-group { border: 1px solid var(--border); border-radius: 18px; padding: 16px; }
@@ -129,8 +138,16 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .option-list.grid-bonus {
   display: grid !important;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 12px;
+  gap: clamp(4px, 1.2vw, 10px);
+  margin-top: clamp(8px, 1.6vh, 14px);
+}
+
+/* Compact mode for the bonus photo-card screen: trim the card chrome and the
+   question heading so all 8 cards fit on one screen without scrolling. */
+#trial-screen.bonus-cards { padding: clamp(14px, 3.5vw, 28px); }
+#trial-screen.bonus-cards #question-text {
+  font-size: clamp(1.05rem, 3.6vw, 1.5rem);
+  margin-bottom: clamp(8px, 1.5vh, 14px);
 }
 
 .member-card {
@@ -140,7 +157,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 6px;
+  padding: clamp(4px, 1vw, 8px);
   cursor: pointer;
   transition: border-color 0.2s, background-color 0.2s;
   width: 100%;
@@ -154,36 +171,41 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   background: #f0f7ff;
 }
 
-.member-card img {
+/* Square photo, sized against BOTH viewport width and height so it never grows
+   too large to fit two rows on screen, nor shrinks below a recognizable size. */
+.member-card img,
+.member-card-placeholder {
   width: 100%;
+  max-width: clamp(52px, min(19vw, 13vh), 112px);
   aspect-ratio: 1 / 1;
-  object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 6px;
+  margin-bottom: clamp(4px, 0.8vh, 6px);
+}
+
+.member-card img {
+  object-fit: cover;
   display: block;
 }
 
 .member-card-placeholder {
-  width: 100%;
-  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #e5e7eb;
-  border-radius: 8px;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: clamp(0.8rem, 3vw, 0.95rem);
   color: #4b5563;
-  margin-bottom: 6px;
   user-select: none;
 }
 
 .member-card-name {
   font-weight: 600;
-  font-size: 0.75rem;
+  font-size: clamp(0.65rem, 2.4vw, 0.82rem);
   color: var(--text);
   word-break: break-word;
+  overflow-wrap: anywhere;
   line-height: 1.25;
+  margin-top: 2px;
 }
 
 /* Free text message input area */

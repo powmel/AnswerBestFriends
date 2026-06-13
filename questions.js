@@ -157,21 +157,11 @@ window.QUESTIONS = {
       { name: "~Daichi DA", image: "assets/members/daichi.jpg" }
     ],
     questions: [
-      { question_id: "bonus_ai_era", type: "member_card", text: { ja: "この中で一番AI時代に強そうな人は？", en: "Who seems the strongest in the AI era?" } },
-      { question_id: "bonus_leader", type: "member_card", text: { ja: "この中で一番リーダーっぽい人は？", en: "Who seems most like a leader?" } },
-      { question_id: "bonus_researcher", type: "member_card", text: { ja: "この中で一番研究者っぽい人は？", en: "Who seems most like a researcher?" } },
-      {
-        question_id: "bonus_message",
-        type: "text",
-        text: { ja: "Hugoに伝えたいメッセージはありますか？", en: "Do you have any messages for Hugo?" },
-        hugo_text: { ja: "みんなに伝えたいメッセージはありますか？", en: "Do you have any messages for everyone?" }
-      },
-      {
-        question_id: "bonus_memories",
-        type: "text",
-        text: { ja: "Hugoとの思い出や印象があれば書いてください。", en: "Please share your memories or impressions of Hugo." },
-        hugo_text: { ja: "日本・筑波・友達との思い出で残しておきたいことはありますか？", en: "Please write down any memories of Japan, Tsukuba, or friends that you would like to keep." }
-      }
+      { question_id: "bonus_night_out", type: "member_card", text: { ja: "二人で夜出かけるなら誰がいい？", en: "Who would you like to go out with at night?" } },
+      { question_id: "bonus_reliable", type: "member_card", text: { ja: "この中で一番頼りになる人は？", en: "Who seems the most reliable?" } },
+      { question_id: "bonus_cooking", type: "member_card", text: { ja: "この中で一番料理を食べてみたい人は？", en: "Whose cooking would you most like to try?" } },
+      { question_id: "bonus_reach", type: "member_card", text: { ja: "この中で一番早く連絡がつかまりそうな人は？", en: "Who seems the easiest to reach quickly?" } },
+      { question_id: "bonus_marry", type: "member_card", text: { ja: "この中で一番早く結婚しそうな人は？", en: "Who seems most likely to get married first?" } }
     ]
   }
 };
