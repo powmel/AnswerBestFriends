@@ -232,6 +232,7 @@
     
     // UI states reset for normal multiple choice layout
     $("option-list").classList.remove("grid-2");
+    $("option-list").classList.remove("grid-bonus");
     $("option-list").classList.remove("hidden");
     $("text-input-area").classList.add("hidden");
 
@@ -408,10 +409,11 @@
         const textVal = textarea.value.trim();
         chooseBonus(textVal);
       };
-    } else {
+    } else if (trial.type === "member_card") {
       // Photo cards selection layout
       $("option-list").classList.remove("hidden");
-      $("option-list").classList.add("grid-2");
+      $("option-list").classList.remove("grid-2");
+      $("option-list").classList.add("grid-bonus");
       $("text-input-area").classList.add("hidden");
       
       $("option-list").innerHTML = "";
@@ -449,6 +451,21 @@
         b.appendChild(nameSpan);
         
         b.onclick = () => chooseBonus(opName);
+        $("option-list").appendChild(b);
+      });
+    } else {
+      // Normal options selection layout (fallback for standard choices if any)
+      $("option-list").classList.remove("hidden");
+      $("option-list").classList.remove("grid-2");
+      $("option-list").classList.remove("grid-bonus");
+      $("text-input-area").classList.add("hidden");
+      
+      $("option-list").innerHTML = "";
+      trial.options.forEach((op) => {
+        const b = document.createElement("button");
+        b.className = "option-button";
+        b.textContent = op;
+        b.onclick = () => chooseBonus(op);
         $("option-list").appendChild(b);
       });
     }

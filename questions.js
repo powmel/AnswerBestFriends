@@ -157,9 +157,9 @@ window.QUESTIONS = {
       { name: "~Daichi DA", image: "assets/members/daichi.jpg" }
     ],
     questions: [
-      { question_id: "bonus_ai_era", type: "select", text: { ja: "この中で一番AI時代に強そうな人は？", en: "Who seems the strongest in the AI era?" } },
-      { question_id: "bonus_leader", type: "select", text: { ja: "この中で一番リーダーっぽい人は？", en: "Who seems most like a leader?" } },
-      { question_id: "bonus_researcher", type: "select", text: { ja: "この中で一番研究者っぽい人は？", en: "Who seems most like a researcher?" } },
+      { question_id: "bonus_ai_era", type: "member_card", text: { ja: "この中で一番AI時代に強そうな人は？", en: "Who seems the strongest in the AI era?" } },
+      { question_id: "bonus_leader", type: "member_card", text: { ja: "この中で一番リーダーっぽい人は？", en: "Who seems most like a leader?" } },
+      { question_id: "bonus_researcher", type: "member_card", text: { ja: "この中で一番研究者っぽい人は？", en: "Who seems most like a researcher?" } },
       {
         question_id: "bonus_message",
         type: "text",
